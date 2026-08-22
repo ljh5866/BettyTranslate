@@ -1,0 +1,17 @@
+# .NET 构建输出
+bin/
+obj/
+.artifacts/
+
+# IDE 配置
+.vs/
+.idea/
+*.user
+*.suo
+
+# 上游参考代码（独立 git 仓库，可随时重新拉取）
+STranslate/
+
+# 本地数据
+*.db
+*.log

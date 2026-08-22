@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BettyTranslate.App", "BettyTranslate.App\BettyTranslate.App.csproj", "{AFF4CCE0-A5A1-4F68-8BD5-464FAE77E212}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BettyTranslate.Core", "BettyTranslate.Core\BettyTranslate.Core.csproj", "{32926068-489A-488B-B758-44A8FEDED13C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AFF4CCE0-A5A1-4F68-8BD5-464FAE77E212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFF4CCE0-A5A1-4F68-8BD5-464FAE77E212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFF4CCE0-A5A1-4F68-8BD5-464FAE77E212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFF4CCE0-A5A1-4F68-8BD5-464FAE77E212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32926068-489A-488B-B758-44A8FEDED13C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32926068-489A-488B-B758-44A8FEDED13C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32926068-489A-488B-B758-44A8FEDED13C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32926068-489A-488B-B758-44A8FEDED13C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
