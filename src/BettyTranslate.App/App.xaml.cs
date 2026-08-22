@@ -2,7 +2,10 @@ using System.IO;
 using System.Windows;
 using BettyTranslate.App.Views;
 using BettyTranslate.Core.Auth;
+using BettyTranslate.Core.Capture;
+using BettyTranslate.Core.Ocr;
 using BettyTranslate.Core.Settings;
+using BettyTranslate.Core.Translation;
 
 namespace BettyTranslate.App;
 
@@ -14,6 +17,9 @@ public partial class App : Application
     /// <summary>全局认证服务实例（窗口/ViewModel 通过此访问）</summary>
     public static IAuthService AuthService { get; private set; } = null!;
 
+    /// <summary>屏幕翻译编排服务（F1 热键触发）</summary>
+    public static ScreenTranslateService TranslateService { get; private set; } = null!;
+
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -21,6 +27,10 @@ public partial class App : Application
         var configPath = Path.Combine(AppContext.BaseDirectory, "Config", "appsettings.json");
         var settings = AppSettings.Load(configPath);
         AuthService = new SupabaseAuthService(settings.Supabase.Url, settings.Supabase.AnonKey);
+        TranslateService = new ScreenTranslateService(
+            new ScreenCaptureService(),
+            new WindowsOcrEngine(),
+            new BaiduTranslateProvider(settings.BaiduTranslate.AppId, settings.BaiduTranslate.SecretKey));
 
         // 恢复本地会话：有效则直接进入主界面，否则进入登录页
         if (await AuthService.EnsureSessionAsync())

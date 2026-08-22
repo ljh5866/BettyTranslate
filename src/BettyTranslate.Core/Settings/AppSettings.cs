@@ -9,6 +9,9 @@ public sealed class AppSettings
 {
     public SupabaseSettings Supabase { get; set; } = new();
 
+    /// <summary>百度翻译开放平台配置（未配置时翻译功能提示申请）</summary>
+    public BaiduTranslateSettings BaiduTranslate { get; set; } = new();
+
     /// <summary>从 JSON 文件加载配置；文件缺失或解析失败时返回默认配置</summary>
     public static AppSettings Load(string jsonPath)
     {
@@ -32,4 +35,10 @@ public sealed class SupabaseSettings
 {
     public string Url { get; set; } = string.Empty;
     public string AnonKey { get; set; } = string.Empty;
+}
+
+public sealed class BaiduTranslateSettings
+{
+    public string AppId { get; set; } = string.Empty;
+    public string SecretKey { get; set; } = string.Empty;
 }

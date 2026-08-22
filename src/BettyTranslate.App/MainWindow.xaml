@@ -25,10 +25,10 @@
         <Border Grid.Row="1" Background="White" CornerRadius="8" Margin="0,16,0,0"
                 BorderBrush="#E0E0E0" BorderThickness="1">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="屏幕翻译功能开发中（M2 里程碑）"
-                           FontSize="16" Foreground="#888888" HorizontalAlignment="Center" />
-                <TextBlock Text="按快捷键后将询问是否进行屏幕翻译并扫描翻译"
-                           FontSize="13" Foreground="#AAAAAA" Margin="0,8,0,0" HorizontalAlignment="Center" />
+                <TextBlock Text="按 F1 开始屏幕翻译"
+                           FontSize="18" FontWeight="SemiBold" Foreground="#333333" HorizontalAlignment="Center" />
+                <TextBlock Text="将询问是否进行屏幕翻译，确认后扫描全屏并翻译为中文"
+                           FontSize="13" Foreground="#888888" Margin="0,8,0,0" HorizontalAlignment="Center" />
             </StackPanel>
         </Border>
     </Grid>
