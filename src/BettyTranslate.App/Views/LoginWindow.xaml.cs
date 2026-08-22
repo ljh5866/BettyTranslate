@@ -15,8 +15,9 @@ public partial class LoginWindow : Window
         InitializeComponent();
         _viewModel = new LoginViewModel(App.AuthService);
         DataContext = _viewModel;
-        // PasswordBox 不支持绑定，同步到 ViewModel
+        // PasswordBox 不支持绑定，两个密码框都在代码后同步到 ViewModel
         PasswordBox.PasswordChanged += (_, _) => _viewModel.Password = PasswordBox.Password;
+        RegPasswordBox.PasswordChanged += (_, _) => _viewModel.Password = RegPasswordBox.Password;
         _viewModel.LoginSucceeded += OnLoginSucceeded;
     }
 

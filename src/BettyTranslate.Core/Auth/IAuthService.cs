@@ -13,8 +13,11 @@ public interface IAuthService
     /// <summary>邮箱密码登录，成功返回 true</summary>
     Task<bool> SignInAsync(string email, string password);
 
-    /// <summary>邮箱密码注册，成功返回 true</summary>
-    Task<bool> SignUpAsync(string email, string password);
+    /// <summary>发送注册邮箱验证码（6 位数字，发到邮箱）</summary>
+    Task SendVerificationCodeAsync(string email);
+
+    /// <summary>验证码校验 + 邮箱密码注册，成功返回 true</summary>
+    Task<bool> RegisterWithCodeAsync(string email, string password, string code);
 
     /// <summary>退出登录并清除本地会话</summary>
     Task SignOutAsync();

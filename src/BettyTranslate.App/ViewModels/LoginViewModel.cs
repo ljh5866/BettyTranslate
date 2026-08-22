@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using BettyTranslate.Core.Auth;
@@ -5,7 +6,7 @@ using BettyTranslate.Core.Auth;
 namespace BettyTranslate.App.ViewModels;
 
 /// <summary>
-/// 登录页 ViewModel：登录 / 注册 / 错误提示
+/// 登录页 ViewModel：登录（邮箱+密码）/ 注册（邮箱+密码+6位验证码）/ 提示信息
 /// </summary>
 public partial class LoginViewModel : ObservableObject
 {
@@ -18,7 +19,14 @@ public partial class LoginViewModel : ObservableObject
     private string _password = string.Empty;
 
     [ObservableProperty]
+    private string _verificationCode = string.Empty;
+
+    [ObservableProperty]
     private string _errorMessage = string.Empty;
+
+    /// <summary>绿色提示信息（如"验证码已发送"）</summary>
+    [ObservableProperty]
+    private string _notice = string.Empty;
 
     [ObservableProperty]
     private bool _isBusy;
@@ -27,29 +35,44 @@ public partial class LoginViewModel : ObservableObject
     public event Action? LoginSucceeded;
 
     public IAsyncRelayCommand LoginCommand { get; }
+    public IAsyncRelayCommand SendCodeCommand { get; }
     public IAsyncRelayCommand RegisterCommand { get; }
 
     public LoginViewModel(IAuthService auth)
     {
         _auth = auth;
         LoginCommand = new AsyncRelayCommand(LoginAsync, () => CanSubmit);
-        RegisterCommand = new AsyncRelayCommand(RegisterAsync, () => CanSubmit);
+        SendCodeCommand = new AsyncRelayCommand(SendCodeAsync, () => CanSendCode);
+        RegisterCommand = new AsyncRelayCommand(RegisterAsync, () => CanRegister);
     }
 
     partial void OnIsBusyChanged(bool value)
     {
         LoginCommand.NotifyCanExecuteChanged();
+        SendCodeCommand.NotifyCanExecuteChanged();
         RegisterCommand.NotifyCanExecuteChanged();
     }
 
-    partial void OnEmailChanged(string value) => NotifyCanSubmit();
-    partial void OnPasswordChanged(string value) => NotifyCanSubmit();
+    partial void OnEmailChanged(string value) => NotifyAll();
+    partial void OnPasswordChanged(string value) => NotifyAll();
+    partial void OnVerificationCodeChanged(string value) => NotifyAll();
 
     private bool CanSubmit => !IsBusy && !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
 
-    private void NotifyCanSubmit()
+    /// <summary>发送验证码：邮箱格式合法且非忙碌</summary>
+    private bool CanSendCode => !IsBusy && EmailRegex.IsMatch(Email);
+
+    /// <summary>注册：邮箱、密码合法且验证码为 6 位数字</summary>
+    private bool CanRegister => !IsBusy && EmailRegex.IsMatch(Email)
+        && Password.Length >= 6 && VerificationCodeRegex.IsMatch(VerificationCode);
+
+    private static readonly Regex EmailRegex = new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled);
+    private static readonly Regex VerificationCodeRegex = new(@"^\d{6}$", RegexOptions.Compiled);
+
+    private void NotifyAll()
     {
         LoginCommand.NotifyCanExecuteChanged();
+        SendCodeCommand.NotifyCanExecuteChanged();
         RegisterCommand.NotifyCanExecuteChanged();
     }
 
@@ -57,6 +80,7 @@ public partial class LoginViewModel : ObservableObject
     {
         IsBusy = true;
         ErrorMessage = string.Empty;
+        Notice = string.Empty;
         try
         {
             if (await _auth.SignInAsync(Email, Password))
@@ -74,16 +98,43 @@ public partial class LoginViewModel : ObservableObject
         }
     }
 
+    private async Task SendCodeAsync()
+    {
+        IsBusy = true;
+        ErrorMessage = string.Empty;
+        Notice = string.Empty;
+        try
+        {
+            await _auth.SendVerificationCodeAsync(Email);
+            Notice = "验证码已发送，请查收邮箱";
+        }
+        catch (AuthException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
     private async Task RegisterAsync()
     {
         IsBusy = true;
         ErrorMessage = string.Empty;
+        Notice = string.Empty;
         try
         {
-            if (await _auth.SignUpAsync(Email, Password))
-                ErrorMessage = "注册成功，请前往邮箱确认后登录";
+            // 验证码校验通过后即完成注册并登录（VerifyOTP + SignUp）
+            if (await _auth.RegisterWithCodeAsync(Email, Password, VerificationCode))
+            {
+                Notice = "注册成功";
+                LoginSucceeded?.Invoke();
+            }
             else
-                ErrorMessage = "注册失败，请重试";
+            {
+                ErrorMessage = "注册成功，请前往邮箱确认后返回登录";
+            }
         }
         catch (AuthException ex)
         {

@@ -54,18 +54,37 @@ public sealed class SupabaseAuthService : IAuthService, IAsyncDisposable
         }
     }
 
-    public async Task<bool> SignUpAsync(string email, string password)
+    public async Task SendVerificationCodeAsync(string email)
     {
         try
         {
             var client = await GetClientAsync();
-            var session = await client.Auth.SignUp(email, password);
-            // 若开启了邮箱确认，注册后无有效会话，需提示用户前往邮箱确认
-            return session?.User != null || client.Auth.CurrentSession != null;
+            await client.Auth.SignInWithOtp(new SignInWithPasswordlessEmailOptions(email));
         }
         catch (Exception ex)
         {
-            throw new AuthException("注册失败，请检查邮箱格式或是否已注册", ex);
+            throw new AuthException("验证码发送失败，请检查邮箱后重试", ex);
+        }
+    }
+
+    public async Task<bool> RegisterWithCodeAsync(string email, string password, string code)
+    {
+        try
+        {
+            var client = await GetClientAsync();
+            // 校验邮箱验证码（SignInWithOtp 发送的 token，验证通过即自动创建账号并登录）
+            await client.Auth.VerifyOTP(email, code.Trim(), Constants.EmailOtpType.MagicLink);
+            // 为刚验证的账号设置密码
+            await client.Auth.Update(new UserAttributes { Password = password });
+            return client.Auth.CurrentSession != null;
+        }
+        catch (AuthException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new AuthException("注册失败：验证码错误或该邮箱已注册", ex);
         }
     }
 
