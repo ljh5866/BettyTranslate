@@ -1,30 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="..\BettyTranslate.Core\BettyTranslate.Core.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
   </ItemGroup>
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <!-- windows10.0.19041.0 启用 WinRT API，与 Core 保持一致 -->
+    <!-- windows10.0.19041.0 鍚敤 WinRT API锛屼笌 Core 淇濇寔涓€鑷?-->
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>0.5.2</Version>
-    <InformationalVersion>0.5.2-build20260827</InformationalVersion>
-    <!-- exe 文件图标 -->
+    <Version>0.5.3</Version>
+    <InformationalVersion>0.5.3-build20260828</InformationalVersion>
+    <!-- exe 鏂囦欢鍥炬爣 -->
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="Config\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
     <Resource Include="Assets\AppIcon.ico" />
   </ItemGroup>
-
 </Project>
