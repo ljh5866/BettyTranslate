@@ -7,15 +7,15 @@
   </ItemGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <!-- windows10.0.19041.0 闂佸憡鍑归崹鎶藉极?WinRT API闂佹寧绋戞總鏃傜箔?Core 婵烇絽娲︾换鍐偓鍨⒐缁嬪鍩€椤掑嫭鍤?-->
+    <!-- windows10.0.19041.0 闂備礁鎲￠崙褰掑垂閹惰棄鏋?WinRT API闂備焦瀵х粙鎴炵附閺冨倻绠?Core 濠电儑绲藉ú锔炬崲閸愵亖鍋撻崹顐ｂ拹缂佸顦甸崺鈧い鎺戝閸?-->
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>0.5.6</Version>
-    <InformationalVersion>0.5.6-build20260828</InformationalVersion>
-    <!-- exe 闂佸搫鍊稿ú锝呪枎閵忋倕鐐婇柣鎰靛墰閸?-->
+    <Version>0.5.7</Version>
+    <InformationalVersion>0.5.7-build20260828</InformationalVersion>
+    <!-- exe 闂備礁鎼崐绋棵洪敐鍛瀻闁靛繈鍊曢悙濠囨煟閹伴潧澧伴柛?-->
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
