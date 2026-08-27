@@ -87,14 +87,21 @@ public partial class App : Application
         // 开机自启（带 --autostart）时主界面静默隐藏到系统托盘，不弹出窗口
         var startInTray = e.Args.Any(a =>
             string.Equals(a, "--autostart", StringComparison.OrdinalIgnoreCase));
-        if (await AuthService.EnsureSessionAsync())
+
+        if (startInTray)
         {
-            var mainWindow = new MainWindow(startInTray);
+            // 开机自启：无论是否已有持久化会话，都直接以托盘模式静默启动，绝不弹出登录界面。
+            // 已有会话则因 EnsureSessionAsync 的宽松判定被自动登录；无会话时也先进入主界面，
+            // 待用户用到需登录功能（如图片翻译）时再按其令牌有效性提示登录。
+            var mainWindow = new MainWindow(startInTray: true);
             mainWindow.Show();
             // Show() 会在窗口句柄创建后（OnSourceInitialized）再设为可见，
             // 会覆盖其中对开机自启的 Hide()。因此在这里再次隐藏，确保自启时静默进托盘。
-            if (startInTray)
-                mainWindow.Hide();
+            mainWindow.Hide();
+        }
+        else if (await AuthService.EnsureSessionAsync())
+        {
+            new MainWindow().Show();
         }
         else
         {

@@ -108,18 +108,20 @@ public sealed class SupabaseAuthService : IAuthService, IAsyncDisposable
                 return false;
 
             // 恢复本地会话后主动续期一次令牌：旧的 access token 过期时刷新，
-            // 避免长时间未启动后误判为「未登录」而要求重新登录；刷新失败（断网等）则退回当前会话判断。
+            // 避免长时间未启动后误判为「未登录」而要求重新登录。
+            // 刷新失败（如开机初期网络未就绪）时并不强制判定为「未登录」：
+            // 只要本地已恢复出持久化会话，即视为已登录，交由后台自动续期定时器在网络恢复后继续刷新。
             try
             {
                 await client.Auth.RetrieveSessionAsync();
             }
             catch
             {
-                // 刷新失败忽略，交由下方按当前会话是否过期判定
+                // 刷新失败忽略：仅凭持久化会话是否存在即可判定登录状态，
+                // 令牌是否真正可用由后续请求按有效性处理。
             }
 
-            var session = client.Auth.CurrentSession;
-            return session != null && !session.Expired();
+            return client.Auth.CurrentSession != null;
         }
         catch
         {
