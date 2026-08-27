@@ -7,15 +7,15 @@
   </ItemGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <!-- windows10.0.19041.0 闂傚倸鍊搁崐椋庣矆娓氣偓楠炲鏁撻悩鑼槱閻熸粎澧楃敮鎺楀垂閸岀偞鐓欓柟顖滃椤ュ鏌?WinRT API闂傚倸鍊搁崐鐑芥倿閿旈敮鍋撶粭娑樻噽閻瑩鏌熺€电浠ч梻鍕閺岋繝宕橀妸銉㈠亾閼姐倗涓?Core 婵犵數濮烽弫鎼佸磿閹寸姴绶ら柦妯侯棦濞差亝鏅滈柣鎰靛墮鎼村﹪姊洪崨濠傚Е濞存粍鐗犲畷鎴﹀箻鐠囨彃鐎銈嗗姧缁叉椽骞忛崷顓犵＝濞达絽澹婇崕蹇斻亜閿旂偓鏆€规洘妞介崺鈧い鎺嶉檷娴滄粓鏌熼悜妯虹仴妞ゅ浚浜弻?-->
+    <!-- windows10.0.19041.0 闂傚倸鍊搁崐鎼佸磹妞嬪海鐭嗗〒姘ｅ亾妤犵偛顦甸弫鎾绘偐閼碱剦妲遍柣鐔哥矌婢ф鏁幒妤€鍨傞柛宀€鍋為悡娆撴煙椤栨粌顣兼い銉ヮ樀閺?WinRT API闂傚倸鍊搁崐鎼佸磹閻戣姤鍊块柨鏃堟暜閸嬫挾绮☉妯诲櫧闁活厽鐟╅弻鐔衡偓鐢殿焾娴犙囨⒒閸曨偄顏柡宀嬬節瀹曟﹢濡搁妷銏犱壕闁煎鍊楁稉?Core 濠电姷鏁告慨鐑藉极閹间礁纾块柟瀵稿Т缁躲倝鏌﹀Ο渚＆婵炲樊浜濋弲婊堟煟閹伴潧澧幖鏉戯躬濮婃椽宕ㄦ繝鍌毿曟繛瀛樼矋閻楃姴鐣烽幋锕€绠婚悹鍥ㄥ絻閻庮厼顪冮妶鍡楀Ё缂佸弶妞介獮蹇涘捶椤撶姷锛濇繛杈剧到婢瑰﹪宕曡箛鏂讳簻闁挎梻鍋撻弳顒傗偓瑙勬礃濡炰粙宕洪埀顒併亜閹哄秹妾峰ù婊勭矒閺岀喖鎮滃Ο铏逛淮濡炪倕娴氭禍顏堝蓟?-->
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Version>0.5.10</Version>
-    <InformationalVersion>0.5.10-build20260828</InformationalVersion>
-    <!-- exe 闂傚倸鍊搁崐椋庣矆娓氣偓楠炴牠顢曢敃鈧壕鍦磼鐎ｎ偓绱╂繛宸簼閺呮煡鏌涘☉鍙樼凹闁诲骸顭峰娲濞戞氨鐤勯梺绋匡攻濞茬喖骞冨▎鎰瘈闁搞儯鍔庨崢浠嬫⒑闁稑宓嗘繛浣冲嫭娅犲ù鐓庣摠閻?-->
+    <Version>0.5.11</Version>
+    <InformationalVersion>0.5.11-build20260828</InformationalVersion>
+    <!-- exe 闂傚倸鍊搁崐鎼佸磹妞嬪海鐭嗗〒姘ｅ亾妤犵偞鐗犻、鏇㈡晝閳ь剛澹曢崷顓犵＜閻庯綆鍋撶槐鈺傜箾瀹割喕绨奸柡鍛叀閺屾稑鈽夐崣妯煎嚬闂佽楠搁…宄邦潖濞差亝顥堟繛鎴炴皑閻ゅ嫰姊虹粙鍖℃敾婵炶尙鍠栭獮鍐ㄢ枎閹邦喚鐦堥梺鎼炲劘閸斿酣宕㈡禒瀣拺闂侇偅绋戝畵鍡樼箾娴ｅ啿瀚▍鐘裁归悡搴ｆ憼闁?-->
     <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
