@@ -30,15 +30,20 @@ public sealed class SupabaseAuthService : IAuthService, IAsyncDisposable
         if (_client != null)
             return _client;
 
+        var sessionHandler = new DpapiSessionHandler();
         var options = new SupabaseOptions
         {
             AutoConnectRealtime = false,
             AutoRefreshToken = true,
-            SessionHandler = new DpapiSessionHandler(),
+            SessionHandler = sessionHandler,
         };
         var client = new Supabase.Client(_url, _anonKey, options);
         await client.InitializeAsync();
-        // gotrue-csharp 4.2.7 不会在 InitializeAsync 时自动从 SessionHandler 恢复会话，
+        // gotrue-csharp 只有调用了 SetPersistence 后，才会在登录/令牌刷新时把会话写盘，
+        // 也才会在 LoadSession 时从磁盘恢复会话；仅传入 SupabaseOptions.SessionHandler 未必接线。
+        // 这里显式绑定同一实例，确保 session.bin 一定会被写入，重启后即可静默自动登录。
+        client.Auth.SetPersistence(sessionHandler);
+        // gotrue-csharp 不会在 InitializeAsync 时自动从 SessionHandler 恢复会话，
         // 必须显式调用 LoadSession() 才能把持久化的会话加载到 CurrentSession。
         client.Auth.LoadSession();
         _client = client;
