@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Supabase;
 using Supabase.Gotrue;
 using Supabase.Gotrue.Interfaces;
@@ -36,6 +38,9 @@ public sealed class SupabaseAuthService : IAuthService, IAsyncDisposable
         };
         var client = new Supabase.Client(_url, _anonKey, options);
         await client.InitializeAsync();
+        // gotrue-csharp 4.2.7 不会在 InitializeAsync 时自动从 SessionHandler 恢复会话，
+        // 必须显式调用 LoadSession() 才能把持久化的会话加载到 CurrentSession。
+        client.Auth.LoadSession();
         _client = client;
         return client;
     }
@@ -99,12 +104,108 @@ public sealed class SupabaseAuthService : IAuthService, IAsyncDisposable
         try
         {
             var client = await GetClientAsync();
+            if (client.Auth.CurrentSession == null)
+                return false;
+
+            // 恢复本地会话后主动续期一次令牌：旧的 access token 过期时刷新，
+            // 避免长时间未启动后误判为「未登录」而要求重新登录；刷新失败（断网等）则退回当前会话判断。
+            try
+            {
+                await client.Auth.RetrieveSessionAsync();
+            }
+            catch
+            {
+                // 刷新失败忽略，交由下方按当前会话是否过期判定
+            }
+
             var session = client.Auth.CurrentSession;
             return session != null && !session.Expired();
         }
         catch
         {
             return false;
+        }
+    }
+
+    public async Task<int> GetImageTranslateCountAsync()
+    {
+        try
+        {
+            var client = await GetClientAsync();
+            var user = client.Auth.CurrentUser;
+            if (user == null)
+                return 0;
+            var uid = ParseUserId(user.Id);
+            var response = await client.From<UserUsage>()
+                .Where(x => x.UserId == uid)
+                .Get();
+            return response.Models.FirstOrDefault()?.ImageTranslateCount ?? 0;
+        }
+        catch
+        {
+            // 查询失败按 0 处理，不阻断免费体验
+            return 0;
+        }
+    }
+
+    /// <summary>当前用户是否为图片翻译特权用户：user_usage.is_unlimited 为 true 则无限使用（由管理后台维护）</summary>
+    public async Task<bool> IsImageTranslateUnlimitedAsync()
+    {
+        try
+        {
+            var client = await GetClientAsync();
+            var user = client.Auth.CurrentUser;
+            if (user == null)
+                return false;
+            var uid = ParseUserId(user.Id);
+            var response = await client.From<UserUsage>()
+                .Where(x => x.UserId == uid)
+                .Get();
+            return response.Models.FirstOrDefault()?.IsUnlimited ?? false;
+        }
+        catch
+        {
+            // 查询失败按非特权处理，保守回归正常额度限制
+            return false;
+        }
+    }
+
+    public async Task IncrementImageTranslateCountAsync()
+    {
+        try
+        {
+            var client = await GetClientAsync();
+            var user = client.Auth.CurrentUser;
+            if (user == null)
+                return;
+            var uid = ParseUserId(user.Id);
+            var current = await GetImageTranslateCountAsync();
+            await client.From<UserUsage>().Upsert(new UserUsage
+            {
+                UserId = uid,
+                ImageTranslateCount = current + 1,
+            });
+        }
+        catch
+        {
+            // 计数失败仅影响免费额度，不阻断本次翻译
+        }
+    }
+
+    /// <summary>把 Supabase 用户 ID（uuid 字符串）解析为 Guid，供 user_usage 表使用；传入 null 或非 uuid 时返回 Guid.Empty</summary>
+    private static Guid ParseUserId(string? id) =>
+        Guid.TryParse(id, out var g) ? g : Guid.Empty;
+
+    public async Task<string?> GetAccessTokenAsync()
+    {
+        try
+        {
+            var client = await GetClientAsync();
+            return client.Auth.CurrentSession?.AccessToken;
+        }
+        catch
+        {
+            return null;
         }
     }
 

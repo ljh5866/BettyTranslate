@@ -1,0 +1,8 @@
+# Supabase 本地/项目配置（供 supabase CLI 使用，如 functions deploy）
+# 项目 ref 取自 appsettings.json 的 Supabase.Url
+project_id = "ivkqcwddcwdyhzbczlqe"
+
+[functions.vision-translate]
+# 保留平台默认 JWT 校验：仅持有有效登录态的用户可调用本函数，
+# 函数内部再用 auth.getUser() 取到 auth.uid() 并核对免费额度。
+verify_jwt = true

@@ -16,10 +16,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>0.5.2</Version>
+    <InformationalVersion>0.5.2-build20260827</InformationalVersion>
+    <!-- exe 文件图标 -->
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="Config\appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <Resource Include="Assets\AppIcon.ico" />
   </ItemGroup>
 
 </Project>

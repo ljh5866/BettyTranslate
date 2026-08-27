@@ -1,0 +1,57 @@
+<Window x:Class="BettyTranslate.App.Views.SelectionTranslateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="划词翻译结果"
+        WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True"
+        Background="Transparent" Topmost="True" ShowInTaskbar="False"
+        Width="380" SizeToContent="Height" FontFamily="Segoe UI"
+        PreviewKeyDown="OnPreviewKeyDown">
+    <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="10"
+            BorderBrush="{DynamicResource AccentBorderBrush}" BorderThickness="1"
+            MaxHeight="400">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16" ShadowDepth="3" Opacity="0.4" Direction="270" />
+        </Border.Effect>
+        <StackPanel>
+            <!-- 标题栏（强调色，可拖动窗口） -->
+            <Border Background="{DynamicResource AccentBrush}" CornerRadius="10,10,0,0" Padding="14,8"
+                    MouseLeftButtonDown="OnHeaderMouseLeftButtonDown" Cursor="SizeAll">
+                <Grid>
+                    <TextBlock Text="划词翻译" FontSize="12" FontWeight="SemiBold" Foreground="White"
+                               VerticalAlignment="Center" />
+                    <Button x:Name="CloseBtn" Content="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                            Width="24" Height="24" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Background="Transparent" BorderThickness="0" Foreground="White"
+                            Cursor="Hand" ToolTip="关闭" Click="OnCloseClick">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                        CornerRadius="6">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="#55FFFFFF" />
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="#80FFFFFF" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+            </Border>
+            <!-- 内容区：滚轮可上下查看 -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300" Padding="14,10,14,14">
+                <StackPanel>
+                    <TextBlock x:Name="SourceText" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" />
+                    <Border Height="1" Background="{DynamicResource BorderBrushColor}" Margin="0,8,0,8" />
+                    <TextBlock x:Name="TranslationText" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+            </ScrollViewer>
+        </StackPanel>
+    </Border>
+</Window>

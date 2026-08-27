@@ -31,12 +31,21 @@ public partial class LoginViewModel : ObservableObject
     [ObservableProperty]
     private bool _isBusy;
 
+    /// <summary>当前是否处于注册模式（false 为登录模式）</summary>
+    [ObservableProperty]
+    private bool _isRegisterMode;
+
+    /// <summary>当前是否处于登录模式（与 IsRegisterMode 相反）</summary>
+    public bool IsLoginMode => !IsRegisterMode;
+
     /// <summary>登录成功事件（由窗口订阅以跳转主界面）</summary>
     public event Action? LoginSucceeded;
 
     public IAsyncRelayCommand LoginCommand { get; }
     public IAsyncRelayCommand SendCodeCommand { get; }
     public IAsyncRelayCommand RegisterCommand { get; }
+    public IRelayCommand SwitchToLoginCommand { get; }
+    public IRelayCommand SwitchToRegisterCommand { get; }
 
     public LoginViewModel(IAuthService auth)
     {
@@ -44,6 +53,8 @@ public partial class LoginViewModel : ObservableObject
         LoginCommand = new AsyncRelayCommand(LoginAsync, () => CanSubmit);
         SendCodeCommand = new AsyncRelayCommand(SendCodeAsync, () => CanSendCode);
         RegisterCommand = new AsyncRelayCommand(RegisterAsync, () => CanRegister);
+        SwitchToLoginCommand = new RelayCommand(SwitchToLogin);
+        SwitchToRegisterCommand = new RelayCommand(SwitchToRegister);
     }
 
     partial void OnIsBusyChanged(bool value)
@@ -52,6 +63,8 @@ public partial class LoginViewModel : ObservableObject
         SendCodeCommand.NotifyCanExecuteChanged();
         RegisterCommand.NotifyCanExecuteChanged();
     }
+
+    partial void OnIsRegisterModeChanged(bool value) => OnPropertyChanged(nameof(IsLoginMode));
 
     partial void OnEmailChanged(string value) => NotifyAll();
     partial void OnPasswordChanged(string value) => NotifyAll();
@@ -74,6 +87,28 @@ public partial class LoginViewModel : ObservableObject
         LoginCommand.NotifyCanExecuteChanged();
         SendCodeCommand.NotifyCanExecuteChanged();
         RegisterCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>切换到登录模式并清空表单</summary>
+    private void SwitchToLogin()
+    {
+        IsRegisterMode = false;
+        ClearInputs();
+    }
+
+    /// <summary>切换到注册模式并清空表单</summary>
+    private void SwitchToRegister()
+    {
+        IsRegisterMode = true;
+        ClearInputs();
+    }
+
+    private void ClearInputs()
+    {
+        Password = string.Empty;
+        VerificationCode = string.Empty;
+        ErrorMessage = string.Empty;
+        Notice = string.Empty;
     }
 
     private async Task LoginAsync()

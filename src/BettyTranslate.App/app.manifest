@@ -10,6 +10,15 @@
     </windowsSettings>
   </application>
 
+  <!-- 请求管理员权限：启动时弹 UAC，保证全局热键 / 剪贴板注入 / UI Automation 对管理员级程序同样生效 -->
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <application>
       <!-- Windows 10 / 11 -->

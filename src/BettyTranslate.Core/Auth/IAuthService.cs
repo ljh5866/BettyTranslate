@@ -24,4 +24,16 @@ public interface IAuthService
 
     /// <summary>启动时恢复本地会话；存在有效会话返回 true</summary>
     Task<bool> EnsureSessionAsync();
+
+    /// <summary>当前用户已使用的图片翻译次数（免费额度计数，按账号记录）</summary>
+    Task<int> GetImageTranslateCountAsync();
+
+    /// <summary>当前用户是否为图片翻译特权用户（user_usage.is_unlimited 为 true，可无限使用，由管理后台维护）</summary>
+    Task<bool> IsImageTranslateUnlimitedAsync();
+
+    /// <summary>把当前用户的图片翻译次数累加 1（免费体验计数）</summary>
+    Task IncrementImageTranslateCountAsync();
+
+    /// <summary>当前登录用户的访问令牌（JWT），用于调用需要登录态的 Edge Function；未登录返回 null</summary>
+    Task<string?> GetAccessTokenAsync();
 }

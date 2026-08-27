@@ -1,0 +1,15 @@
+<Window x:Class="BettyTranslate.App.Views.OverlayTranslateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="翻译结果"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize"
+        PreviewKeyDown="OnPreviewKeyDown">
+    <Canvas x:Name="RootCanvas" Background="Transparent">
+        <Border x:Name="HintBox" Background="#E6222222" CornerRadius="6" Padding="12,6"
+                Canvas.ZIndex="100">
+            <TextBlock x:Name="HintText" Text="翻译完成 · 按 ESC 或点击空白处关闭"
+                       Foreground="White" FontSize="13" />
+        </Border>
+    </Canvas>
+</Window>

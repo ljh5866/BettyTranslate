@@ -16,5 +16,28 @@ STranslate/
 *.db
 *.log
 
+# 本地下载的 Supabase CLI 二进制（勿提交）
+.tools/
+
 # 本地敏感配置（含 Supabase Key，勿提交；请以 appsettings.example.json 为模板）
 src/BettyTranslate.App/Config/appsettings.json
+
+# 本地发布产物（便携包/安装包）
+release/
+
+# Directus 管理面板配置（含数据库密码，勿提交）
+directus/
+
+# 本地测试临时文件
+alpha_test.ps1
+alpha_test_out.txt
+
+# Supabase CLI 临时文件（含项目关联信息）
+supabase/.temp/
+
+# 临时复现工程
+tmp_repro/
+
+# 视觉翻译测试脚本（含 API Key，勿提交）
+vision_test.ps1
+vision_test_out.txt

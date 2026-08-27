@@ -20,7 +20,10 @@ public sealed class HotkeyService : IDisposable
 
     /// <summary>不自动重复触发（按住不放只触发一次）</summary>
     public const uint MOD_NOREPEAT = 0x4000;
-    public const uint VK_F1 = 0x70;
+    public const uint MOD_CONTROL = 0x0002;
+    public const uint VK_F10 = 0x79;
+    public const uint VK_F11 = 0x7A;
+    public const uint VK_F12 = 0x7B;
 
     private readonly IntPtr _handle;
     private readonly HwndSource _source;
@@ -43,6 +46,13 @@ public sealed class HotkeyService : IDisposable
             return false;
         _ids.Add(id);
         return true;
+    }
+
+    /// <summary>注销单个热键 id（不影响其他已注册热键）</summary>
+    public void Unregister(int id)
+    {
+        if (_ids.Remove(id))
+            UnregisterHotKey(_handle, id);
     }
 
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

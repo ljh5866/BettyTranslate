@@ -20,7 +20,13 @@ public sealed class BaiduTranslateProvider : ITranslateProvider
     {
         _appId = appId;
         _secretKey = secretKey;
-        _http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+
+        // 直连：本机直连百度 API 可用（诊断验证 HTTP 200），
+        // 走系统代理反而会因代理对 baidu 域名的 TLS 处理而失败
+        _http = new HttpClient(new SocketsHttpHandler { UseProxy = false })
+        {
+            Timeout = TimeSpan.FromSeconds(5)
+        };
     }
 
     public async Task<string> TranslateAsync(string text, string toLanguage)
