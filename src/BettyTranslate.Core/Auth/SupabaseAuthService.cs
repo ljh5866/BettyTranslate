@@ -208,6 +208,23 @@ public sealed class SupabaseAuthService : IAuthService, IAsyncDisposable
         try
         {
             var client = await GetClientAsync();
+            var session = client.Auth.CurrentSession;
+            if (session == null)
+                return null;
+
+            // access token 有效期通常仅 1 小时。长时间运行后，若定时器未及时刷新，
+            // 直接拿旧 token 调服务端会被 Edge Function 判为 401（登录已失效）。
+            // 返回前主动续期一次：会话仍新鲜则 gotrue 内部不发网络请求，临近过期才真正刷新。
+            // 刷新失败（如断网）时沿用现有 token，交由服务端接口按实际情况提示。
+            try
+            {
+                await client.Auth.RetrieveSessionAsync();
+            }
+            catch
+            {
+                // 忽略刷新失败：沿用现有 token，服务端后续请求会按有效性给出明确提示
+            }
+
             return client.Auth.CurrentSession?.AccessToken;
         }
         catch
