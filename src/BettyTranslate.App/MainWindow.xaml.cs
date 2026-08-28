@@ -244,9 +244,12 @@ public partial class MainWindow : Window
         // 开机自启动：以注册表启动项为准
         _loadingSettings = true;
         AutoStartCheck.IsChecked = AutoStartHelper.IsEnabled();
+        DesktopShortcutCheck.IsChecked = DesktopShortcutHelper.IsEnabled();
         _loadingSettings = false;
         AutoStartStatusText.Text = AutoStartCheck.IsChecked == true
             ? "已开启开机自启动" : "已关闭开机自启动";
+        DesktopShortcutStatusText.Text = DesktopShortcutCheck.IsChecked == true
+            ? "已创建桌面快捷方式" : "未创建桌面快捷方式";
 
         UserApiKeyBox.Text = settings.UserDeepSeekKey;
         _ = UpdateFreeQuotaTextAsync();
@@ -487,6 +490,24 @@ public partial class MainWindow : Window
         {
             AutoStartCheck.IsChecked = !enabled;
             AutoStartStatusText.Text = "设置开机自启动失败"; 
+        }
+    }
+
+    /// <summary>桌面快捷方式开关：勾选即在桌面创建/删除本程序的快捷方式并立即生效</summary>
+    private void OnDesktopShortcutToggled(object sender, RoutedEventArgs e)
+    {
+        if (_loadingSettings)
+            return;
+
+        var enabled = DesktopShortcutCheck.IsChecked == true;
+        if (DesktopShortcutHelper.SetEnabled(enabled))
+        {
+            DesktopShortcutStatusText.Text = enabled ? "已创建桌面快捷方式" : "已删除桌面快捷方式";
+        }
+        else
+        {
+            DesktopShortcutCheck.IsChecked = !enabled;
+            DesktopShortcutStatusText.Text = "设置桌面快捷方式失败";
         }
     }
 
@@ -948,8 +969,17 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 检查更新并（发现新版本后）自动下载安装包。
-    /// <paramref name="silent"/> 为 true 时（启动自动检查）无新版本不打扰用户，仅静默结束。
+    /// 点击主页面更新提示横幅的「前往更新」：切换到设置页并定位到更新区。
+    /// </summary>
+    private void OnUpdateBannerClick(object sender, RoutedEventArgs e)
+    {
+        ShowSettingsView();
+        UpdateSectionPanel.BringIntoView();
+    }
+
+    /// <summary>
+    /// 检查更新。启动静默检查（silent=true）时仅在主页面提示有新版本，不自动下载；
+    /// 设置页手动检查（silent=false）时下载并应用更新。
     /// </summary>
     private async Task CheckForUpdateAsync(bool silent)
     {
@@ -980,29 +1010,15 @@ public partial class MainWindow : Window
                 return;
             }
 
-            UpdateStatusText.Text = $"发现新版本 v{info.LatestVersion}（当前 v{current}）。正在自动下载安装包…";
-            UpdateLink.NavigateUri = new Uri(info.HtmlUrl);
-            UpdateResultText.Visibility = Visibility.Visible;
-
-            // 自动下载安装包到临时目录，并实时显示进度
-            var dest = Path.Combine(Path.GetTempPath(), info.AssetName);
-            UpdateProgressBar.Value = 0;
-            UpdateProgressBar.Visibility = Visibility.Visible;
-            var progress = new Progress<double>(p =>
+            // 启动静默检查：仅在主页面提示有新版本，不自动下载；点击「前往更新」跳转到设置页更新区。
+            if (silent)
             {
-                UpdateProgressBar.Value = p;
-                UpdateStatusText.Text = $"正在下载 v{info.LatestVersion}… {p:P0}";
-            });
-            await App.UpdateService.DownloadAsync(info.DownloadUrl, dest, progress);
-            UpdateProgressBar.Visibility = Visibility.Collapsed;
-            UpdateStatusText.Text = $"已下载 {info.AssetName}（v{info.LatestVersion}）。正在启动安装程序…";
+                ShowUpdateBanner(current, info.LatestVersion);
+                return;
+            }
 
-            // zip 包打开所在目录，其他安装包直接启动
-            if (info.AssetName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", $"/select,\"{dest}\"")
-                { UseShellExecute = true });
-            else
-                Process.Start(new System.Diagnostics.ProcessStartInfo(dest) { UseShellExecute = true });
+            // 设置页手动检查：继续下载并应用更新
+            await DownloadAndApplyUpdateAsync(info, current);
         }
         catch (Exception ex)
         {
@@ -1013,6 +1029,72 @@ public partial class MainWindow : Window
         {
             CheckUpdateButton.IsEnabled = true;
         }
+    }
+
+    /// <summary>在主页面顶部显示「发现新版本」提示横幅</summary>
+    private void ShowUpdateBanner(Version current, Version latest)
+    {
+        UpdateBannerText.Text = $"发现新版本 v{latest}（当前 v{current}），可前往设置页更新。";
+        UpdateBanner.Visibility = Visibility.Visible;
+    }
+
+    /// <summary>下载新版本安装包并应用（设置页手动触发），zip 包在应用内自动替换并重启</summary>
+    private async Task DownloadAndApplyUpdateAsync(UpdateInfo info, Version current)
+    {
+        UpdateStatusText.Text = $"发现新版本 v{info.LatestVersion}（当前 v{current}）。正在自动下载安装包…";
+        UpdateLink.NavigateUri = new Uri(info.HtmlUrl);
+        UpdateResultText.Visibility = Visibility.Visible;
+
+        // 自动下载安装包到临时目录，并实时显示进度
+        var dest = Path.Combine(Path.GetTempPath(), info.AssetName);
+        UpdateProgressBar.Value = 0;
+        UpdateProgressBar.Visibility = Visibility.Visible;
+        var progress = new Progress<double>(p =>
+        {
+            UpdateProgressBar.Value = p;
+            UpdateStatusText.Text = $"正在下载 v{info.LatestVersion}… {p:P0}";
+        });
+        await App.UpdateService.DownloadAsync(info.DownloadUrl, dest, progress);
+        UpdateProgressBar.Visibility = Visibility.Collapsed;
+
+        // zip 包：应用内自动替换并重启；其他安装包（exe/msi）直接启动
+        if (info.AssetName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+        {
+            var confirm = MessageBox.Show(this,
+                $"已下载新版本 v{info.LatestVersion}（{info.AssetName}）。\n是否现在应用更新并重启软件？",
+                "应用更新", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (confirm != MessageBoxResult.Yes)
+            {
+                // 用户暂不更新：删除临时安装包，避免占用磁盘空间
+                try { File.Delete(dest); } catch { }
+                UpdateStatusText.Text = $"已下载 v{info.LatestVersion}，暂未应用。随时可再次点击「检查更新」完成升级。";
+                return;
+            }
+
+            UpdateStatusText.Text = "正在应用更新，软件即将自动重启…";
+            try
+            {
+                AutoUpdater.PrepareAndApplyUpdate(
+                    dest,
+                    AppContext.BaseDirectory,
+                    Environment.ProcessPath ??
+                        Path.Combine(AppContext.BaseDirectory, "BettyTranslate.App.exe"),
+                    info.LatestVersion);
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusText.Text = "应用更新失败：" + ex.Message;
+                return;
+            }
+
+            // 关闭当前进程，由守护脚本完成文件替换并重启
+            _reallyExit = true;
+            Close();
+            return;
+        }
+
+        UpdateStatusText.Text = $"已下载 {info.AssetName}（v{info.LatestVersion}）。正在启动安装程序…";
+        Process.Start(new System.Diagnostics.ProcessStartInfo(dest) { UseShellExecute = true });
     }
 
     /// <summary>点击右上角关闭时，弹出美观的自定义弹窗，让用户选择「隐藏到电脑扩展栏 / 退出程序」</summary>

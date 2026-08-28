@@ -190,6 +190,20 @@
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                     <TextBlock Text="抬起全局快捷键，框选屏幕上的英文区域，即可悬浮覆盖中文译文"
                                FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,8,0,0" />
+                    <!-- 发现新版本时显示：点击「前往更新」跳转到设置页更新区 -->
+                    <Border x:Name="UpdateBanner" Background="{DynamicResource AccentSoftBrush}"
+                            CornerRadius="8" Padding="16,12" Margin="0,16,0,0" Visibility="Collapsed"
+                            BorderBrush="{DynamicResource AccentBorderBrush}" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Name="UpdateBannerText" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center"
+                                       TextWrapping="Wrap" />
+                            <Button x:Name="UpdateBannerBtn" Content="前往更新" FontSize="12" FontWeight="SemiBold"
+                                    Padding="16,6" Margin="16,0,0,0" Background="{DynamicResource AccentBrush}"
+                                    Foreground="White" BorderThickness="0" Cursor="Hand"
+                                    Click="OnUpdateBannerClick" />
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
                 <Grid Grid.Row="1" VerticalAlignment="Center">
@@ -380,7 +394,8 @@
 
             <!-- 设置页 -->
             <Grid x:Name="SettingsView" Margin="44,36" Visibility="Collapsed">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
                     <StackPanel MaxWidth="720" Margin="0,0,0,24">
                         <TextBlock Text="设置" FontSize="24" FontWeight="SemiBold"
                                    Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -562,6 +577,11 @@
                                       Checked="OnAutoStartToggled" Unchecked="OnAutoStartToggled" />
                             <TextBlock x:Name="AutoStartStatusText" FontSize="12"
                                        Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,8,0,0" />
+                            <CheckBox x:Name="DesktopShortcutCheck" Content="在桌面创建快捷方式" FontSize="14"
+                                      Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,18,0,0"
+                                      Checked="OnDesktopShortcutToggled" Unchecked="OnDesktopShortcutToggled" />
+                            <TextBlock x:Name="DesktopShortcutStatusText" FontSize="12"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,8,0,0" />
                         </StackPanel>
                     </Border>
 
@@ -586,13 +606,14 @@
                     </Border>
 
                     <!-- 检查更新 -->
-                    <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="24,22"
+                    <Border x:Name="UpdateSectionPanel" Background="{DynamicResource SurfaceBrush}"
+                            CornerRadius="8" Padding="24,22"
                             BorderBrush="{DynamicResource BorderBrushColor}" BorderThickness="1"
                             Margin="0,16,0,0">
                         <StackPanel>
                             <TextBlock Text="检查更新" FontSize="16" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="从 GitHub Releases 检查新版本，发现新版本后自动下载安装包（在设置页配置仓库）"
+                            <TextBlock Text="从 GitHub Releases 检查新版本，发现新版本后自动下载、替换文件并重启，无需手动下载 zip（在设置页配置仓库）"
                                        FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                                        Margin="0,6,0,20" TextWrapping="Wrap" />
                             <StackPanel Orientation="Horizontal">
