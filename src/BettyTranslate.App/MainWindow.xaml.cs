@@ -1064,10 +1064,9 @@ public partial class MainWindow : Window
         // zip 包：应用内自动替换并重启；其他安装包（exe/msi）直接启动
         if (info.AssetName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
         {
-            var confirm = MessageBox.Show(this,
-                $"已下载新版本 v{info.LatestVersion}（{info.AssetName}）。\n是否现在应用更新并重启软件？",
-                "应用更新", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (confirm != MessageBoxResult.Yes)
+            var updateDialog = new UpdateConfirmWindow(info.LatestVersion.ToString(), info.AssetName) { Owner = this };
+            var confirmed = updateDialog.ShowDialog() == true;
+            if (!confirmed)
             {
                 // 用户暂不更新：删除临时安装包，避免占用磁盘空间
                 try { File.Delete(dest); } catch { }
