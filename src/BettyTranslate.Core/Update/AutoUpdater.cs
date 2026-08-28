@@ -52,14 +52,14 @@ public static class AutoUpdater
         Process.Start(psi);
     }
 
-    /// <summary>生成守护批处理脚本。参数：%1=应用目录，%2=exe 路径，%3=临时解压目录，%4=安装包路径，%5=当前进程 ID。</summary>
+    /// <summary>生成守护批处理脚本，把应用目录、exe 路径、临时解压目录、安装包与进程 ID 直接内联进脚本，避免依赖批处理位置参数。</summary>
     private static string BuildScript(string appDir, string exePath, string staging, string zipPath, int pid)
         => $"""
             @echo off
             setlocal EnableExtensions
             rem Wait for the main process to exit so the running exe can be replaced
             :wait
-            tasklist /FI "PID eq %5" 2>nul | findstr /I /C:"%5" >nul
+            tasklist /FI "PID eq {pid}" 2>nul | findstr /I /C:"{pid}" >nul
             if not errorlevel 1 (
               ping 127.0.0.1 -n 2 >nul
               goto wait
@@ -67,12 +67,12 @@ public static class AutoUpdater
             rem Wait a moment for file handles to be released
             ping 127.0.0.1 -n 4 >nul
             rem Mirror-replace the app directory: copy new files, remove stale ones, keep user config and logs
-            robocopy "%3" "%1" /MIR /XD Config logs /R:2 /W:1 /NJH /NJS /NFP /NS /NC >nul
+            robocopy "{staging}" "{appDir}" /MIR /XD Config logs /R:2 /W:1 /NJH /NJS /NFP /NS /NC >nul
             rem Clean the extracted staging directory and the downloaded package
-            rd /s /q "%3"
-            del "%4" >nul 2>&1
+            rd /s /q "{staging}"
+            del "{zipPath}" >nul 2>&1
             rem Restart the application
-            start "" "%2"
+            start "" "{exePath}"
             rem Remove this updater script itself (must be the last command)
             del "%~f0" >nul 2>&1
             """;
