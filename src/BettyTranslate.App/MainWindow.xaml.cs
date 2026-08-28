@@ -947,6 +947,10 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>点击「官方网址」：用系统默认浏览器打开官网</summary>
+    private void OnOfficialUrlClick(object sender, RoutedEventArgs e)
+        => Process.Start(new ProcessStartInfo("https://www.ttals.com") { UseShellExecute = true });
+
     private async void OnLogoutClick(object sender, RoutedEventArgs e)
     {
         await App.AuthService.SignOutAsync();

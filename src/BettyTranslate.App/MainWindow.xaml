@@ -164,6 +164,13 @@
                 <!-- 底部操作 -->
                 <StackPanel Grid.Row="2" Margin="0,16,0,0">
                     <Border Height="1" Background="{DynamicResource BorderBrushColor}" Margin="0,0,0,10" />
+                    <Button Style="{StaticResource BottomNavButton}" Click="OnOfficialUrlClick">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE774;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="官方网址" FontSize="13" Margin="10,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
                     <Button Style="{StaticResource BottomNavButton}" Click="OnLogoutClick">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE7E8;" FontFamily="Segoe MDL2 Assets" FontSize="14"
@@ -613,7 +620,7 @@
                         <StackPanel>
                             <TextBlock Text="检查更新" FontSize="16" FontWeight="SemiBold"
                                        Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="从 GitHub Releases 检查新版本，发现新版本后自动下载、替换文件并重启，无需手动下载 zip（在设置页配置仓库）"
+                            <TextBlock Text="更新会更新一下功能，和修复一下bug"
                                        FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
                                        Margin="0,6,0,20" TextWrapping="Wrap" />
                             <StackPanel Orientation="Horizontal">
